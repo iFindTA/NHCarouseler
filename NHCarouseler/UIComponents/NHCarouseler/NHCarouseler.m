@@ -180,7 +180,7 @@
 - (NSUInteger)pageCount{
     NSAssert(_dataSource != nil, @"datasource can not be nil!");
     NSUInteger counts = [_dataSource numberOfRowsForCarouseler:self];
-    NSAssert(counts > 0, @"review page number must more than one !");
+    //NSAssert(counts > 0, @"review page number must more than one !");
     return counts;
 }
 

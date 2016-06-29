@@ -39,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)carouseler:(NHCarouseler *)view willDismissIndex:(NSUInteger)index;
 - (void)carouseler:(NHCarouseler *)view didChangeToIndex:(NSUInteger)index;
 
+- (void)carouseler:(NHCarouseler *)view didSelectedIndex:(NSUInteger)index;
+
 @end
 
 @protocol NHCarouselerDataSource <NSObject>
