@@ -89,7 +89,11 @@
 }
 
 - (void)carouseler:(NHCarouseler *)view didChangeToIndex:(NSUInteger)index{
-    NSLog(@"did changed to index :%zd",index);
+    //NSLog(@"did changed to index :%zd",index);
+}
+
+- (void)carouseler:(NHCarouseler *)view didSelectedIndex:(NSUInteger)index {
+    NSLog(@"did touch to index :%zd",index);
 }
 
 -(UIColor *)randomColor{

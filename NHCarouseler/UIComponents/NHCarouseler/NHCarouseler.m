@@ -28,11 +28,36 @@
 
 @end
 
+#pragma mark -- TouchScroll
+@protocol NHTouchScrollDelegate;
+@interface NHTouchScroll : UIScrollView
+
+@property (nonatomic, weak) id<NHTouchScrollDelegate> touchDelegate;
+
+@end
+
+@protocol NHTouchScrollDelegate <NSObject>
+
+- (void)didTouchEndScroll:(NHTouchScroll*)scroll;
+
+@end
+
+@implementation NHTouchScroll
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    [super touchesEnded:touches withEvent:event];
+    if (_touchDelegate && [_touchDelegate respondsToSelector:@selector(didTouchEndScroll:)]) {
+        [_touchDelegate didTouchEndScroll:self];
+    }
+}
+
+@end
+
 #pragma mark -- Carouseler --
 
-@interface NHCarouseler ()<UIScrollViewDelegate>
+@interface NHCarouseler ()<UIScrollViewDelegate, NHTouchScrollDelegate>
 
-@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) NHTouchScroll *scrollView;
 @property (nonatomic, strong) NHCarouselerCell *prePage,*curPage,*nexPage;
 @property (nonatomic, assign) NSUInteger prePageIdx,curPageIdx,nexPageIdx,pageCount;
 @property (nonatomic, strong) NSMutableDictionary *identifierDict;
@@ -62,11 +87,12 @@
         self.identifierDict = [NSMutableDictionary dictionary];
         self.pageCount = 0;
         self.curPage = 0;
-        self.scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
+        self.scrollView = [[NHTouchScroll alloc] initWithFrame:self.bounds];
         self.scrollView.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
         self.scrollView.contentMode = UIViewContentModeCenter;
         self.scrollView.contentSize = CGSizeMake(3*CGRectGetWidth(self.scrollView.bounds), CGRectGetHeight(self.scrollView.bounds));
         self.scrollView.delegate = self;
+        self.scrollView.touchDelegate = self;
         self.scrollView.contentOffset = CGPointMake(CGRectGetWidth(self.scrollView.bounds), 0);
         self.scrollView.pagingEnabled = true;
         self.scrollView.showsHorizontalScrollIndicator = false;
@@ -97,7 +123,7 @@
     NHCarouselerCell *page = [pageCacheArr lastObject];
     NHCarouselerCell *dstCell ;
     if (page) {
-        NSLog(@"reuse old page");
+        //NSLog(@"reuse old page");
         dstCell = page;
         [pageCacheArr removeLastObject];
     }/*else{
@@ -260,6 +286,14 @@
     
     if (!scrollView.isDragging) {
         [self launchTimer];
+    }
+}
+
+#pragma mark -- Touch Delegate
+
+- (void)didTouchEndScroll:(NHTouchScroll *)scroll {
+    if (_delegate && [_delegate respondsToSelector:@selector(carouseler:didSelectedIndex:)]) {
+        [_delegate carouseler:self didSelectedIndex:self.curPageIdx];
     }
 }
 
